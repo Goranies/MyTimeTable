@@ -12,7 +12,8 @@
         <activity android:name=".TimeInputActivity"></activity>
         <activity android:name=".WizardActivity" />
         <activity android:name=".LobbyActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
