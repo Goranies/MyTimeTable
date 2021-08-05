@@ -28,12 +28,12 @@ public class LobbyActivity extends AppCompatActivity {
     {
         if(item.getItemId()==R.id.lobby_mitem_GotoWizard)
         {
-            Intent intent = new Intent(this,TimeInputActivity.class);
+            Intent intent = new Intent(this,WizardActivity.class);
             startActivity(intent);
         }
         else if(item.getItemId()==R.id.lobby_mitem_GotoInput)
         {
-            Intent intent = new Intent(this,WizardActivity.class);
+            Intent intent = new Intent(this,TimeInputActivity.class);
             startActivity(intent);
         }
         return true;
