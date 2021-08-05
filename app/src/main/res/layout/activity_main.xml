@@ -23,7 +23,7 @@
         android:layout_marginStart="158dp"
         android:layout_marginEnd="159dp"
         android:layout_marginBottom="252dp"
-        android:onClick="doSomething"
+        android:onClick="clickButton"
         android:text="Button"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"

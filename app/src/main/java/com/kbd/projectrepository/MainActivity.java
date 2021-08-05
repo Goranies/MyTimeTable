@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void doSomething(View view) {
+    public void clickButton(View view) {
         Intent i1 = new Intent(this, LobbyActivity.class);
         startActivity(i1);
     }
