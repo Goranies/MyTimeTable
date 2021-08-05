@@ -7,26 +7,32 @@
     tools:context=".WizardActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/wizard_textView_helpText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:text="요래저래 하시면 됩니다."
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="25dp" />
+        app:layout_constraintStart_toStartOf="@+id/wizard_button_temp"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/wizard_button_temp"
         android:layout_width="378dp"
         android:layout_height="402dp"
+        android:layout_marginTop="50dp"
         android:text="RecyclerView"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="66dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wizard_textView_helpText" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/wizard_btn_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:text="실행"
-        tools:layout_editor_absoluteX="161dp"
-        tools:layout_editor_absoluteY="509dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wizard_button_temp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

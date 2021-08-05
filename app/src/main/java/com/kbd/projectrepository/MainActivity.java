@@ -16,7 +16,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void clickButton(View view) {
-        Intent i1 = new Intent(this, LobbyActivity.class);
-        startActivity(i1);
+        if(view.getId() == R.id.main_btn_button) {
+            Intent i1 = new Intent(this, LobbyActivity.class);
+            startActivity(i1);
+        }
     }
 }

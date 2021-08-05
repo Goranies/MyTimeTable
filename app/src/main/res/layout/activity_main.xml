@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/main_textView_splashText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="232dp"
@@ -17,7 +17,7 @@
         app:layout_constraintRight_toRightOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/main_btn_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="158dp"
@@ -25,7 +25,7 @@
         android:layout_marginBottom="252dp"
         android:onClick="clickButton"
         android:text="Button"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/main_textView_splashText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
