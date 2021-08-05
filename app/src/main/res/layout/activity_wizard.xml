@@ -6,4 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".WizardActivity">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="요래저래 하시면 됩니다."
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="25dp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="378dp"
+        android:layout_height="402dp"
+        android:text="RecyclerView"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="66dp" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="실행"
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="509dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
