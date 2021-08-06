@@ -12,27 +12,83 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:text="요래저래 하시면 됩니다."
-        app:layout_constraintStart_toStartOf="@+id/wizard_button_temp"
+        app:layout_constraintStart_toStartOf="@+id/cardView"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/wizard_button_temp"
-        android:layout_width="378dp"
-        android:layout_height="402dp"
-        android:layout_marginTop="50dp"
-        android:text="RecyclerView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/wizard_textView_helpText" />
 
     <Button
         android:id="@+id/wizard_btn_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="244dp"
         android:text="실행"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/wizard_button_temp" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="20dp"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="5dp"
+        app:cardMaxElevation="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wizard_textView_helpText">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp">
+
+            <EditText
+                android:id="@+id/wizard_card_editText_groupName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:editable="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="textPersonName"
+                android:text="그룹 1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/wizard_card_button_editName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:background="#FFFFFF"
+                android:focusable="false"
+                android:onClick="clickButton"
+                app:layout_constraintStart_toEndOf="@+id/wizard_card_editText_groupName"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_modify_name_button" />
+
+            <ImageButton
+                android:id="@+id/imageButton5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:background="#FFFFFF"
+                app:layout_constraintEnd_toStartOf="@+id/imageButton6"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_add_time_button" />
+
+            <ImageButton
+                android:id="@+id/imageButton6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_delete_group_button" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
