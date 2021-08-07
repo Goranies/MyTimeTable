@@ -2,8 +2,181 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LobbyConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LobbyActivity">
+
+    <TableLayout
+        android:id="@+id/LobbyTableLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableRow
+            android:id="@+id/LobbyTextViewWeek"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0">
+
+            <TextView
+                android:id="@+id/LobbyTextViewCenter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="시간/요일" />
+
+            <TextView
+                android:id="@+id/LobbyTextViewMon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="월"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/LobbyTextViewTues"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="화"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/LobbyTextViewWednes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="수"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/LobbyTextViewThurs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="목"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/LobbyTextViewFri"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="금"
+                android:textAlignment="center" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/LobbyTableRow09"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/LobbyTextView09"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="9:00" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/LobbyTableRow10"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/LobbyTextView10"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="10:00" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/LobbyTableRow11"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/LobbyTextView11"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="11:00" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/LobbyTableRow12"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/LobbyTextView12"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="12:00" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/LobbyTableRow13"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/LobbyTextView13"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="13:00" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/LobbyTableRow14"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/LobbyTextView14"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="14:00" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/LobbyTableRow15"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/LobbyTextView15"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="15:00" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/LobbyTableRow16"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/LobbyTextView16"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="16:00" />
+        </TableRow>
+
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"></LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
