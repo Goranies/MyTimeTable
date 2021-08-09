@@ -96,6 +96,7 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         imm.showSoftInput(v, 0);
                     } else {
                         groupName.setFocusable(false);
+                        groupName.setFocusableInTouchMode(false);
                     }
                 }
             });
