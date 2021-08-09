@@ -10,29 +10,34 @@
         android:id="@+id/wizard_textView_helpText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="48dp"
         android:text="요래저래 하시면 됩니다."
-        app:layout_constraintStart_toStartOf="@+id/wizard_button_temp"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/wizard_button_temp"
-        android:layout_width="378dp"
-        android:layout_height="402dp"
-        android:layout_marginTop="50dp"
-        android:text="RecyclerView"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/wizard_textView_helpText" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/wizard_btn_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginBottom="24dp"
         android:text="실행"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/wizard_recycler"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/wizard_btn_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/wizard_button_temp" />
+        app:layout_constraintTop_toBottomOf="@+id/wizard_textView_helpText" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
