@@ -44,7 +44,7 @@ public class LobbyActivity extends AppCompatActivity {
     protected TextView TextViewS14;
     protected TextView TextViewS15;
     protected TextView TextViewS16;*/ //혹시 필요할지 모르니 생성만 해둚
-    static ArrayList<Button> LobbyButtonList = new ArrayList();
+    ArrayList<Button> LobbyButtonList = new ArrayList();
     protected ConstraintLayout layout;
 
 
@@ -67,9 +67,6 @@ public class LobbyActivity extends AppCompatActivity {
 
         Time talk = new Time(15,16,"오은엽","발토",5,"Y1130"); //시간표 직접추가 test
         timetable.get_time(talk);
-
-
-
         setContentView(R.layout.activity_lobby);    // 콘텐트 뷰 그리기
 
         MonthTextView = findViewById(R.id.LobbyTextViewMon);// 뷰 추가
