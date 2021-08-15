@@ -1,6 +1,7 @@
 package com.kbd.projectrepository;
 
 import android.os.Bundle;
+import android.telephony.mbms.GroupCall;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 
 public class WizardActivity extends AppCompatActivity {
     private RecyclerView groupRecycler;
+    private GroupAdapter groupAdapter;
     private ArrayList<Group> groupArrayList;
 
     @Override
@@ -32,7 +34,7 @@ public class WizardActivity extends AppCompatActivity {
         groupArrayList.add(new Group());
         groupArrayList.add(new Group());
 
-        GroupAdapter groupAdapter = new GroupAdapter(this, groupArrayList);
+        groupAdapter = new GroupAdapter(this, groupArrayList);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
