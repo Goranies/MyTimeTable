@@ -2,6 +2,7 @@ package com.kbd.projectrepository;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,20 +49,25 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (holder instanceof FooterViewHolder) {
             FooterViewHolder footerHolder = (FooterViewHolder) holder;
             footerHolder.footerButton.setText("그룹 추가");
-//            footerHolder.footerText.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    //그룹 추가 버튼 누를 시 할 일
-//                }
-//            });
+            footerHolder.footerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //그룹 추가 버튼 누를 시 할 일
+                    Log.d("POSITION_size",Integer.toString(groupArrayList.size()+1));
+                    WizardActivity w = (WizardActivity) view.getContext();
+                    w.insertGroup(new Group(groupArrayList.size()+1));
+                }
+            });
         } else if (holder instanceof ItemViewHolder) {
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-            itemViewHolder.groupName.setText("Group " + holder.getAdapterPosition());
+            itemViewHolder.groupName.setText(groupArrayList.get(position).getGroupName());
 
             itemViewHolder.deleteGroup.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //그룹 삭제 버튼을 누르면 할 일
+                    Log.d("POSITION",Integer.toString(position));
+                    holder.getAdapterPosition();
                     groupArrayList.remove(position);
                     notifyItemRemoved(position);
                     notifyDataSetChanged();
@@ -150,8 +156,7 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             footerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    groupArrayList.add(new Group());
-                    notifyDataSetChanged();
+
                 }
             });
         }
