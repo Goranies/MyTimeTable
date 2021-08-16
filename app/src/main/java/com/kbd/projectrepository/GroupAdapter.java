@@ -47,16 +47,26 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         if (holder instanceof FooterViewHolder) {
             FooterViewHolder footerHolder = (FooterViewHolder) holder;
-            footerHolder.footerText.setText("그룹 추가");
-            footerHolder.footerText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //그룹 추가 버튼 누를 시 할 일
-                }
-            });
+            footerHolder.footerButton.setText("그룹 추가");
+//            footerHolder.footerText.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    //그룹 추가 버튼 누를 시 할 일
+//                }
+//            });
         } else if (holder instanceof ItemViewHolder) {
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             itemViewHolder.groupName.setText("Group " + holder.getAdapterPosition());
+
+            itemViewHolder.deleteGroup.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //그룹 삭제 버튼을 누르면 할 일
+                    groupArrayList.remove(position);
+                    notifyItemRemoved(position);
+                    notifyDataSetChanged();
+                }
+            });
         }
     }
 
@@ -127,22 +137,23 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     //강의 시간 추가 버튼을 누르면 할 일
                 }
             });
-
-            deleteGroup.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //그룹 삭제 버튼을 누르면 할 일
-                }
-            });
         }
     }
 
     public class FooterViewHolder extends RecyclerView.ViewHolder {
-        Button footerText;
+        Button footerButton;
 
         public FooterViewHolder(@NonNull View itemView) {
             super(itemView);
-            footerText = itemView.findViewById(R.id.footer_button_addGroup);
+            footerButton = itemView.findViewById(R.id.footer_button_addGroup);
+
+            footerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    groupArrayList.add(new Group());
+                    notifyDataSetChanged();
+                }
+            });
         }
     }
 }
