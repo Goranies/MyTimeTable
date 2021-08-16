@@ -41,17 +41,13 @@ public class LobbyActivity extends AppCompatActivity {
 
     ArrayList<Button> LobbyButtonList = new ArrayList();
     protected ConstraintLayout layout;
-    DbOpenHelper mDbOpenHelper;
-
-
+ 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         timetable = new TimeTable();        //타임테이블 생성
 
-        mDbOpenHelper = new DbOpenHelper(this);
-        mDbOpenHelper.create();
         /*mDbOpenHelper.insertColumn(10,14,1,"조세형","Y9350","C언어");
 
         Cursor iCursor = mDbOpenHelper.selectColumns();
