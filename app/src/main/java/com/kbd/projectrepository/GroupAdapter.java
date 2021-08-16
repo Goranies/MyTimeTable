@@ -54,7 +54,7 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 public void onClick(View view) {
                     //그룹 추가 버튼 누를 시 할 일
                     Log.d("POSITION_size",Integer.toString(groupArrayList.size()+1));
-                    WizardActivity w = (WizardActivity) view.getContext();
+                    WizardActivity w = (WizardActivity) context;
                     w.insertGroup(new Group(groupArrayList.size()+1));
                 }
             });
@@ -67,7 +67,9 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 public void onClick(View v) {
                     //그룹 삭제 버튼을 누르면 할 일
                     Log.d("POSITION",Integer.toString(position));
-                    holder.getAdapterPosition();
+                    WizardActivity w = (WizardActivity) context;
+                    w.deleteGroup(((ItemViewHolder) holder).groupName.getText().toString());
+
                     groupArrayList.remove(position);
                     notifyItemRemoved(position);
                     notifyDataSetChanged();
@@ -95,6 +97,7 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         private ImageButton addTime;
         private ImageButton deleteGroup;
         private InputMethodManager imm;
+        private String prevName;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -110,9 +113,12 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 public void onFocusChange(View v, boolean hasFocus) {
                     if(hasFocus) {
                         imm.showSoftInput(v, 0);
+                        prevName = groupName.getText().toString();
                     } else {
                         groupName.setFocusable(false);
                         groupName.setFocusableInTouchMode(false);
+                        WizardActivity w = (WizardActivity) context;
+                        w.renameGroup(prevName, groupName.getText().toString());
                     }
                 }
             });
@@ -152,13 +158,6 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public FooterViewHolder(@NonNull View itemView) {
             super(itemView);
             footerButton = itemView.findViewById(R.id.footer_button_addGroup);
-
-            footerButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
         }
     }
 }

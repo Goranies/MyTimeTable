@@ -91,17 +91,19 @@ public class WizardActivity extends AppCompatActivity {
         insertGroup(group.getGroupName());
     }
 
-    public void deleteGroup(int ID) {
-        String sql = "delete from GroupTable where ID = ?";
-        String[] args = {Integer.toString(ID)};
+    public void deleteGroup(String name) {
+        String sql = "delete from GroupTable where Name = ?";
+        String[] args = {name};
 
         db.execSQL(sql, args);
     }
 
-    public void renameGroup(int ID, String groupName) {
-        String sql = "update TestTable set Name = ? where ID = ?";
-        String[] args = {groupName, Integer.toString(ID)};
+    public void renameGroup(String prevName, String newName) {
+        String sql = "update GroupTable set Name = ? where Name = ?";
+        String[] args = {newName, prevName};
 
+        Log.d("SQL_PREV", prevName);
+        Log.d("SQL_NEW", newName);
         db.execSQL(sql, args);
     }
 }
