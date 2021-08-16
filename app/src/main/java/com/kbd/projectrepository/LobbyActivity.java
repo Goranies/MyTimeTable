@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class LobbyActivity extends AppCompatActivity {
@@ -36,22 +38,34 @@ public class LobbyActivity extends AppCompatActivity {
     protected TableRow TableRowS15;
     protected TableRow TableRowS16;
 
-   /* protected TextView TextViewS09;
-    protected TextView TextViewS10;
-    protected TextView TextViewS11;
-    protected TextView TextViewS12;
-    protected TextView TextViewS13;
-    protected TextView TextViewS14;
-    protected TextView TextViewS15;
-    protected TextView TextViewS16;*/ //혹시 필요할지 모르니 생성만 해둚
+
     ArrayList<Button> LobbyButtonList = new ArrayList();
     protected ConstraintLayout layout;
+    DbOpenHelper mDbOpenHelper;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         timetable = new TimeTable();        //타임테이블 생성
+
+        mDbOpenHelper = new DbOpenHelper(this);
+        mDbOpenHelper.create();
+        /*mDbOpenHelper.insertColumn(10,14,1,"조세형","Y9350","C언어");
+
+        Cursor iCursor = mDbOpenHelper.selectColumns();
+        while(iCursor.moveToNext()){
+            String tempst = iCursor.getString(iCursor.getColumnIndex("Start_Time"));
+            String tempet = iCursor.getString(iCursor.getColumnIndex("End_Time"));
+            String tempw = iCursor.getString(iCursor.getColumnIndex("Week"));
+            String tempnp = iCursor.getString(iCursor.getColumnIndex("Name_Professor"));
+            String tempnr = iCursor.getString(iCursor.getColumnIndex("Name_Room"));
+            String tempnc = iCursor.getString(iCursor.getColumnIndex("Name_Class"));
+            String Result = tempst + "," +tempet + "," + tempw + "," + tempnp+ "," +tempnr + "," + tempnc;
+            System.out.println(Result);
+
+        }*/
 
         Time clang = new Time(10,14,"조세형","C언어",1,"Y9350"); //시간표 직접추가 test
         timetable.get_time(clang);
@@ -74,14 +88,7 @@ public class LobbyActivity extends AppCompatActivity {
         WEDNESTextView = findViewById(R.id.LobbyTextViewWednes);
         THURSTextView = findViewById(R.id.LobbyTextViewThurs);
         FRITextView = findViewById(R.id.LobbyTextViewFri);
-       /* TextViewS09 = findViewById((R.id.LobbyTextView09));
-        TextViewS10 = findViewById((R.id.LobbyTextView10));
-        TextViewS11 = findViewById((R.id.LobbyTextView11));
-        TextViewS12 = findViewById((R.id.LobbyTextView12));
-        TextViewS13 = findViewById((R.id.LobbyTextView13));
-        TextViewS14 = findViewById((R.id.LobbyTextView14));
-        TextViewS15 = findViewById((R.id.LobbyTextView15));
-        TextViewS16 = findViewById((R.id.LobbyTextView16));*/
+
         TableRowS09 = findViewById((R.id.LobbyTableRow09));
         TableRowS10 = findViewById((R.id.LobbyTableRow10));
         TableRowS11 = findViewById((R.id.LobbyTableRow11));
@@ -204,9 +211,3 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
 }
-// 현재는 데이터베이스가 없고 액티비티 onStart onCreate등의 한계로 화면이동할때마다 변수를 다시 초기화해줘야해서 색이 바뀜. 또 껐다켜면 사라짐.
-// 이것은 임시 작동방식이고 버튼의 데이터베이스가 생긴다면 작동방식을 아래와 같이 바꿈
-// 처음 실행후에 버튼데이터베이스가 null이므로 당연히 초기 빈 상태.
-// 시간표 불러오기 하게되면 시간표를 토대로 버튼들을 생성해서 버튼리스트안에 넣고 버튼들 정보를 데이터베이스에 저장) (불러오기 할때마다 버튼리스트 초기화)
-// 불러오기 후에는 자동으로 그 버튼리스트안의 버튼 layout에 add해서 보여줌
-// 새로켜거나 화면전환한 후에는 버튼데이터베이스가 null이 아니라 존재하므로 저장된 데이터베이스를 그대로 불러와서 버튼 생성후 버튼리스트에 넣고 layout에 add
