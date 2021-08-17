@@ -310,7 +310,7 @@ public class LobbyActivity extends AppCompatActivity {
             String sql = "insert into Table2 (StartTime,EndTime,Professor,Class,Classroom,Week) values (?,?,?,?,?,?)";
             String[] args1 = {"11", "13", "이충기", "C언어", "Y9150", "2"};
             String[] args2 = {"11", "13.5", "이충기", "C언어", "Y9150", "4"};
-            String[] args3 = {"13", "15", "심호진", "공수", "비대면", "3"};
+
             db.execSQL(sql, args1);
             db.execSQL(sql, args2);
             db.execSQL(sql, args3);
