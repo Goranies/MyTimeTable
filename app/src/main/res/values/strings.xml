@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">ProjectRepository</string>
+
+    <string-array name="colleage">
+        <item>명지대학교</item>
+        <item>서울대학교</item>
+        <item>연세대학교</item>
+        <item>고려대학교</item>
+        <item>서강대학교</item>
+        <item>성균관대학교</item>
+        <item>한양대학교</item>
+        <item>중앙대학교</item>
+        <item>경희대학교</item>
+        <item>한국외국어대학교</item>
+        <item>서울시립대학교</item>
+    </string-array>
 </resources>

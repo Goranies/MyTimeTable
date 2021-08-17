@@ -1,8 +1,12 @@
 package com.kbd.projectrepository;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
@@ -11,65 +15,58 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<String> list;          // 데이터를 넣은 리스트변수
+    private AutoCompleteTextView autoCompleteTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         setTheme(R.style.Theme_ProjectRepository);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 리스트를 생성한다.
-        list = new ArrayList<String>();
-
-        // 리스트에 검색될 데이터(단어)를 추가한다.
-        settingList();
-
-        final AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
+        String[] colleage = getResources().getStringArray(R.array.colleage);
+        autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
 
         // AutoCompleteTextView 에 아답터를 연결한다.
-        autoCompleteTextView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, list));
-    }
-
-    // 검색에 사용될 데이터를 리스트에 추가한다.
-    private void settingList() {
-        list.add("채수빈");
-        list.add("박지현");
-        list.add("수지");
-        list.add("남태현");
-        list.add("하성운");
-        list.add("크리스탈");
-        list.add("강승윤");
-        list.add("손나은");
-        list.add("남주혁");
-        list.add("루이");
-        list.add("진영");
-        list.add("슬기");
-        list.add("이해인");
-        list.add("고원희");
-        list.add("설리");
-        list.add("공명");
-        list.add("김예림");
-        list.add("혜리");
-        list.add("웬디");
-        list.add("박혜수");
-        list.add("카이");
-        list.add("진세연");
-        list.add("동호");
-        list.add("박세완");
-        list.add("도희");
-        list.add("창모");
-        list.add("허영지");
+        autoCompleteTextView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, colleage));
     }
 
     public void clickButton(View view) {
-        if (view.getId() == R.id.main_btn_button) {
-            Intent i1 = new Intent(this, LobbyActivity.class);
-            startActivity(i1);
+
+        // 버튼을 클릭했을 때, 빈칸일 경우
+        if (view.getId() == R.id.main_btn_button && TextUtils.isEmpty(autoCompleteTextView.getText())) {
+            Toast.makeText(getApplicationContext(), "대학명을 입력해주세요.", Toast.LENGTH_LONG).show();
+        } else if (view.getId() == R.id.main_btn_button) {
+            // 버튼을 클릭하면 키보드 내리기
+            view = this.getCurrentFocus();
+            if(view != null){
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+
+            // 대화상자 출력
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("학교 선택");
+            builder.setMessage("해당 학교가 맞습니까?");
+            builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(getApplicationContext(),"강의 시간표 페이지로 넘어갑니다.", Toast.LENGTH_LONG).show();
+
+                    Intent i1 = new Intent(MainActivity.this, LobbyActivity.class);
+                    startActivity(i1);
+                }
+            });
+            builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(getApplicationContext(),"아니오를 선택했습니다.",Toast.LENGTH_LONG).show();
+                }
+            });
+            builder.show();
         }
     }
 }
-
