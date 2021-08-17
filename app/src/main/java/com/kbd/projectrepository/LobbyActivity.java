@@ -313,7 +313,7 @@ public class LobbyActivity extends AppCompatActivity {
 
             db.execSQL(sql, args1);
             db.execSQL(sql, args2);
-            db.execSQL(sql, args3);
+
         }
             addTimeButton("Table2");
             ShowTimeTable();
