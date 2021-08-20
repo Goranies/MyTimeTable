@@ -20,22 +20,17 @@ public class LobbyDatabaseHelper extends SQLiteOpenHelper {
 
         String sql1 = "create table Table1("
                 + "ID integer primary key autoincrement, "
-                + "StartTime real not null,"
-                + "EndTime real not null,"
                 + "Professor text not null,"
                 + "Class text not null,"
                 + "Classroom text not null,"
-                + "Week integer not null"
+                + "Time text not null"
                 +")";
-
         String sql2 = "create table Table2("
                 + "ID integer primary key autoincrement, "
-                + "StartTime real not null,"
-                + "EndTime real not null,"
                 + "Professor text not null,"
                 + "Class text not null,"
                 + "Classroom text not null,"
-                + "Week integer not null"
+                + "Time text not null"
                 +")";
         db.execSQL(sql1);
         db.execSQL(sql2);
