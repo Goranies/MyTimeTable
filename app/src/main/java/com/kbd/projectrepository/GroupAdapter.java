@@ -2,17 +2,21 @@ package com.kbd.projectrepository;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.PrecomputedText;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -92,6 +96,7 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
+        private ConstraintLayout groupLayout;
         private TextView groupName;
         private ImageButton editName;
         private ImageButton addTime;
@@ -101,12 +106,32 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
+            groupLayout = itemView.findViewById(R.id.wizard_card_constraintLayout_group);
             groupName = itemView.findViewById(R.id.wizard_card_editText_groupName);
             editName = itemView.findViewById(R.id.wizard_card_button_editName);
             addTime = itemView.findViewById(R.id.wizard_card_button_addTime);
             deleteGroup = itemView.findViewById(R.id.wizard_card_button_deleteGroup);
 
-            imm = (InputMethodManager) context.getSystemService(context.INPUT_METHOD_SERVICE);
+            imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            //groupLayout에 timeLayout 추가하기
+            LayoutInflater inflater = (LayoutInflater) itemView.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE); // 2. inflater 생성
+            View timeView = inflater.inflate(R.layout.group_time_layout,groupLayout,true); // 3. (넣을 xml 파일명, 기반 layout 객체, true)
+
+            timeView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    //timeLayout의 Constraint Widget 속성 변경하기
+                    ConstraintLayout timeLayout = timeView.findViewById(R.id.wizard_time_constraintLayout_time);
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(timeLayout);
+                    constraintSet.connect(R.id.wizard_time_constraintLayout_time, ConstraintSet.TOP, R.id.wizard_card_editText_groupName, ConstraintSet.BOTTOM, 10);
+                    constraintSet.applyTo(timeLayout);
+
+                    timeView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
+
 
             groupName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override

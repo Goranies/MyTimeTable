@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.telephony.mbms.GroupCall;
 import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +29,18 @@ public class WizardActivity extends AppCompatActivity {
 
         wizardDatabaseHelper = new WizardDatabaseHelper(this);
         db = wizardDatabaseHelper.getWritableDatabase();
+
+        String testSql = "insert into TimeTable (Professor, Class, Classroom, Time, LinkGroup) values (?, ?, ?, ?, ?)";
+        String[] professorList = {"김진호", "김병대", "신중섭"};
+        String[] classList = {"인천학개론1", "경남학개론", "인천학개론2"};
+        String[] classRoomList = {"부평지하상가", "경상남도청", "인천앞바다"};
+        String[] timeList = {"월_1230_1330", "화_0800_0900", "수_0930_1130/목_1030_1130"};
+        String[] linkList = {"Group 1", "Group 2", "Group 1"};
+
+        for(int i = 0; i < 3; i++) {
+            String[] arg = {professorList[i], classList[i], classRoomList[i], timeList[i], linkList[i]};
+            db.execSQL(testSql, arg);
+        }
 
         initGroupRecycler();
     }
@@ -105,5 +118,9 @@ public class WizardActivity extends AppCompatActivity {
         Log.d("SQL_PREV", prevName);
         Log.d("SQL_NEW", newName);
         db.execSQL(sql, args);
+    }
+
+    public void clickButton(View view) {
+
     }
 }

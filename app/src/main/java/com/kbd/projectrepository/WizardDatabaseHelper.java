@@ -20,12 +20,22 @@ public class WizardDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         Log.d("DB", "데이터베이스가 생성되었습니다");
 
-        String sql = "create table GroupTable("
+        String sql1 = "create table GroupTable("
                 + "ID integer primary key autoincrement, "
                 + "Name text not null"
                 +")";
 
-        db.execSQL(sql);
+        String sql2 = "create table TimeTable("
+                + "ID integer primary key autoincrement, "
+                + "Professor text not null,"
+                + "Class text not null,"
+                + "Classroom text not null,"
+                + "Time text not null,"
+                + "LinkGroup text not null"
+                +")";
+
+        db.execSQL(sql1);
+        db.execSQL(sql2);
     }
 
     //DB버전이 구식이라면, 업데이트 한다
