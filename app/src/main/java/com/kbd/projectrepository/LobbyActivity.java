@@ -1,9 +1,15 @@
 package com.kbd.projectrepository;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -19,6 +25,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -41,11 +48,16 @@ public class LobbyActivity extends AppCompatActivity {
     public  TableRow TableRowS16;
 
 
-    ArrayList<Button> LobbyButtonList = new ArrayList();
-    public  ConstraintLayout layout;
-    private LobbyDatabaseHelper LobbyDatabaseHelper;
-    private LobbyButtonDatabaseHelper LobbyButtonDatabaseHelper;
-    private SQLiteDatabase db;
+    public static ArrayList<Button> LobbyButtonList = new ArrayList();
+    public static  ConstraintLayout layout;
+    public static String MainTableName = "Table1";
+    public addTimeFragment fragment;
+    public  FragmentManager fragmentManager;
+    public Menu Mymenu;
+
+    public  LobbyDatabaseHelper LobbyDatabaseHelper = new LobbyDatabaseHelper(this);
+    public  LobbyButtonDatabaseHelper LobbyButtonDatabaseHelper;
+    public  SQLiteDatabase db;
 
 
     @Override
@@ -98,7 +110,9 @@ public class LobbyActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)               //옵션바 생성
     {
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.lobbybar,menu);
+        Mymenu = menu;
         return true;
     }
 
@@ -112,8 +126,38 @@ public class LobbyActivity extends AppCompatActivity {
         }
         else if(item.getItemId()==R.id.lobby_mitem_GotoInput)
         {
-            Intent intent = new Intent(this,TimeInputActivity.class);
-            startActivity(intent);
+
+            fragmentManager = getSupportFragmentManager();
+
+        if(fragment == null)
+            {
+
+                fragment = new addTimeFragment();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.LobbyConstraintLayout, fragment);
+                fragmentTransaction.commit();
+
+                MenuItem mi;
+                mi = Mymenu.findItem(R.id.lobby_mitem_Test1);
+                mi.setVisible(false);
+                mi = Mymenu.findItem(R.id.lobby_mitem_Test2);
+                mi.setVisible(false);
+            }
+            else
+                {
+
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.remove(fragment);
+                fragmentTransaction.commit();
+                fragment = null;
+
+            MenuItem mi;
+            mi = Mymenu.findItem(R.id.lobby_mitem_Test1);
+            mi.setVisible(true);
+            mi = Mymenu.findItem(R.id.lobby_mitem_Test2);
+            mi.setVisible(true);
+                }
+
         }
         else if(item.getItemId()==R.id.lobby_mitem_Test1)
         {
@@ -129,6 +173,7 @@ public class LobbyActivity extends AppCompatActivity {
     //생성한 시간표를 버튼리스트에 넣기
     public void addTimeButton(String Table)
     {
+
         LobbyDatabaseHelper = new LobbyDatabaseHelper(this);
         db = LobbyDatabaseHelper.getWritableDatabase();
 
@@ -137,6 +182,7 @@ public class LobbyActivity extends AppCompatActivity {
         Cursor c = db.rawQuery(sql,null);
 
         while(c.moveToNext()) {
+
 
             int Professor_pos = c.getColumnIndex("Professor");
             int Class_pos = c.getColumnIndex("Class");
@@ -151,8 +197,9 @@ public class LobbyActivity extends AppCompatActivity {
             String TimeList[] = TTime.split("/");
 
             for(int i=0;i<TimeList.length;i++) {
+
                 Button b = new Button(this);
-                int t_width, t_height;
+                int t_width =0, t_height=0;
 
                 String tempTime[] = TimeList[i].split("_");
 
@@ -174,7 +221,7 @@ public class LobbyActivity extends AppCompatActivity {
                         t_width = FRITextView.getWidth();
                         b.setX(FRITextView.getX());
                     }
-
+                }
 
 
                     float StartHour = Float.parseFloat(tempTime[1].substring(0,2));
@@ -213,6 +260,7 @@ public class LobbyActivity extends AppCompatActivity {
                     b.setTextSize(11);
                     b.setTextColor(Color.argb(255, 255, 255, 255));
                     b.setText(Tclass + "\n" + Tprofessor + "\n" + Tclassroom);
+                    b.setStateListAnimator(null);
                     int bgcolor;
                     if(i>0)
                     {
@@ -235,11 +283,12 @@ public class LobbyActivity extends AppCompatActivity {
                             , Integer.toString(Color.green(bgcolor)), Integer.toString(Color.blue(bgcolor)), Float.toString(b.getX())
                             , Float.toString(b.getY()), b.getText().toString()};
                     db.execSQL(sql, args);
+                    System.out.println(LobbyButtonList.size());
                 }
             }
         }
 
-    }
+
 
     public void LoadSavedButton()   //저장된 버튼 불러오기
     {
@@ -278,13 +327,14 @@ public class LobbyActivity extends AppCompatActivity {
             b.setTextColor(Color.argb(255, 255, 255, 255));
             b.setText(TText);
             b.setBackgroundColor(Color.argb(255, TRcolor, TGcolor, TBcolor));
-
+            b.setStateListAnimator(null);
             LobbyButtonList.add(b);
         }
     }
 
     public void ChangeTimeTable1()
     {
+        MainTableName = "Table1";
         //버튼 리스트 초기화,레이아웃에서 뷰 삭제
         for(int i=0;i<LobbyButtonList.size();i++) {
             layout.removeView(LobbyButtonList.get(i));
@@ -298,21 +348,14 @@ public class LobbyActivity extends AppCompatActivity {
 
         LobbyDatabaseHelper = new LobbyDatabaseHelper(this);
         db = LobbyDatabaseHelper.getWritableDatabase();
-        long count = DatabaseUtils.queryNumEntries(db,"Table1");
-        if(count ==0)   //아예 비워있을때만 데이터 추가
-        {
 
-            String sql = "insert into Table1 (Professor,Class,Classroom,Time) values (?,?,?,?)";
-            String[] args1 = {"조세형", "C언어", "Y9350","월_1200_1300/수_1200_1400"};
-            db.execSQL(sql, args1);
-
-        }
-            addTimeButton("Table1");
-            ShowTimeTable();
-            System.out.println(LobbyButtonList.size());
+        addTimeButton("Table1");
+        ShowTimeTable();
+        System.out.println(LobbyButtonList.size());
     }
     public void ChangeTimeTable2()
     {
+        MainTableName = "Table2";
         //버튼 리스트 초기화,레이아웃에서 뷰 삭제
         for(int i=0;i<LobbyButtonList.size();i++) {
             layout.removeView(LobbyButtonList.get(i));
@@ -327,19 +370,10 @@ public class LobbyActivity extends AppCompatActivity {
         LobbyDatabaseHelper = new LobbyDatabaseHelper(this);
         db = LobbyDatabaseHelper.getWritableDatabase();
         long count = DatabaseUtils.queryNumEntries(db,"Table2");
-        if(count ==0)   //아예 비워있을때만 데이터 추가
-        {
 
-            String sql = "insert into Table2 (Professor,Class,Classroom,Time) values (?,?,?,?)";
-            String[] args1 = {"이충기", "자바", "Y9150","화_1230_1330/목_1230_1500"};
-            String[] args2 = {"심호진", "공학수학", "Y5230","수_1400_1600"};
-            db.execSQL(sql, args1);
-            db.execSQL(sql, args2);
-
-        }
         addTimeButton("Table2");
         ShowTimeTable();
-        System.out.println(LobbyButtonList.size());
+
     }
 
     public void ShowTimeTable() //시간표 모양 보이게 하는 매소드

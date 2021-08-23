@@ -11,10 +11,12 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/lobby_mitem_GotoWizard"
+        android:icon="@drawable/ic_wizard"
         android:title="마법사"
         app:showAsAction="always" />
     <item
         android:id="@+id/lobby_mitem_GotoInput"
+        android:icon="@drawable/ic_addtime"
         android:title="강의추가"
         app:showAsAction="always" />
 </menu>
