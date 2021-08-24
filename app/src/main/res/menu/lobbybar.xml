@@ -2,6 +2,12 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/lobby_mitem_add"
+        android:checkable="false"
+        android:title="강의추가"
+        android:visible="false"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/lobby_mitem_Test2"
         android:title="시간표2"
         app:showAsAction="always" />

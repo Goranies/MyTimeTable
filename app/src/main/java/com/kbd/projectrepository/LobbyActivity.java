@@ -88,7 +88,6 @@ public class LobbyActivity extends AppCompatActivity {
         db = LobbyButtonDatabaseHelper.getReadableDatabase();
         long count = DatabaseUtils.queryNumEntries(db,"BTable");
 
-
         if(count !=0)       //저장된 버튼데이터베이스가 있었다면 그대로 버튼을 불러옴
         {
             LoadSavedButton();
@@ -126,7 +125,6 @@ public class LobbyActivity extends AppCompatActivity {
         }
         else if(item.getItemId()==R.id.lobby_mitem_GotoInput)
         {
-
             fragmentManager = getSupportFragmentManager();
 
         if(fragment == null)
@@ -142,6 +140,10 @@ public class LobbyActivity extends AppCompatActivity {
                 mi.setVisible(false);
                 mi = Mymenu.findItem(R.id.lobby_mitem_Test2);
                 mi.setVisible(false);
+                mi =Mymenu.findItem(R.id.lobby_mitem_GotoWizard);
+                mi.setVisible(false);
+                mi = Mymenu.findItem(R.id.lobby_mitem_add);
+                mi.setVisible(true);
             }
             else
                 {
@@ -156,6 +158,11 @@ public class LobbyActivity extends AppCompatActivity {
             mi.setVisible(true);
             mi = Mymenu.findItem(R.id.lobby_mitem_Test2);
             mi.setVisible(true);
+            mi =Mymenu.findItem(R.id.lobby_mitem_GotoWizard);
+            mi.setVisible(true);
+            mi = Mymenu.findItem(R.id.lobby_mitem_add);
+            mi.setVisible(false);
+
                 }
 
         }
@@ -166,6 +173,58 @@ public class LobbyActivity extends AppCompatActivity {
         else if(item.getItemId()==R.id.lobby_mitem_Test2)
         {
             ChangeTimeTable2();
+        }
+        else if(item.getItemId()==R.id.lobby_mitem_add)
+        {
+            String tclass = addTimeFragment.name_class.getText().toString();
+            String tclassroom = addTimeFragment.name_classroom.getText().toString();
+            String tprofessor = addTimeFragment.name_professor.getText().toString();
+            String ttime="";
+            for(int i=0;i<addTimeFragment.timechoosefragment_list.size();i++)
+            {
+
+                if(i>0){ttime += "/";}
+               String Week = addTimeFragment.timechoosefragment_list.get(i).Week.getText().toString();
+               String StartTime = addTimeFragment.timechoosefragment_list.get(i).StartTime.getText().toString();
+               String EndTime = addTimeFragment.timechoosefragment_list.get(i).EndTime.getText().toString();
+
+               StartTime = StartTime.replace(":","");
+               EndTime = EndTime.replace(":","");
+               ttime += Week;
+               ttime += "_" +  StartTime;
+               ttime +="_" +  EndTime;
+            }
+
+            //버튼 리스트 초기화,레이아웃에서 뷰 삭제
+            for(int i=0;i<LobbyActivity.LobbyButtonList.size();i++) {
+                LobbyActivity.layout.removeView(LobbyActivity.LobbyButtonList.get(i));
+            }
+            LobbyActivity.LobbyButtonList.clear();
+
+            LobbyDatabaseHelper LobbyDatabaseHelper = new LobbyDatabaseHelper(LobbyActivity.layout.getContext());
+            SQLiteDatabase db = LobbyDatabaseHelper.getWritableDatabase();
+
+            String sql = "insert into "+MainTableName+" (Professor,Class,Classroom,Time) values (?,?,?,?)";
+            String[] args = {tprofessor,tclass,tclassroom,ttime};
+            db.execSQL(sql, args);
+            addTimeButton(MainTableName);
+            ShowTimeTable();
+
+
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.remove(fragment);
+            fragmentTransaction.commit();
+            fragment = null;
+
+            MenuItem mi;
+            mi =Mymenu.findItem(R.id.lobby_mitem_Test1);
+            mi.setVisible(true);
+            mi =Mymenu.findItem(R.id.lobby_mitem_Test2);
+            mi.setVisible(true);
+            mi =Mymenu.findItem(R.id.lobby_mitem_GotoWizard);
+            mi.setVisible(true);
+            mi =Mymenu.findItem(R.id.lobby_mitem_add);
+            mi.setVisible(false);
         }
         return true;
     }
@@ -183,7 +242,6 @@ public class LobbyActivity extends AppCompatActivity {
 
         while(c.moveToNext()) {
 
-
             int Professor_pos = c.getColumnIndex("Professor");
             int Class_pos = c.getColumnIndex("Class");
             int Classroom_pos = c.getColumnIndex("Classroom");
@@ -193,9 +251,7 @@ public class LobbyActivity extends AppCompatActivity {
             String Tclass = c.getString(Class_pos);
             String Tclassroom = c.getString(Classroom_pos);
             String TTime = c.getString(Time_pos);
-
             String TimeList[] = TTime.split("/");
-
             for(int i=0;i<TimeList.length;i++) {
 
                 Button b = new Button(this);
@@ -283,11 +339,9 @@ public class LobbyActivity extends AppCompatActivity {
                             , Integer.toString(Color.green(bgcolor)), Integer.toString(Color.blue(bgcolor)), Float.toString(b.getX())
                             , Float.toString(b.getY()), b.getText().toString()};
                     db.execSQL(sql, args);
-                    System.out.println(LobbyButtonList.size());
                 }
             }
         }
-
 
 
     public void LoadSavedButton()   //저장된 버튼 불러오기

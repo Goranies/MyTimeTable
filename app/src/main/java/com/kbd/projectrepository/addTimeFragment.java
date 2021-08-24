@@ -1,26 +1,24 @@
 package com.kbd.projectrepository;
 
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link addTimeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class addTimeFragment extends Fragment implements View.OnClickListener{
+public class addTimeFragment extends Fragment  {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,11 +28,12 @@ public class addTimeFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private EditText name_class;
-    private EditText name_classroom;
-    private EditText name_professor;
-    private EditText name_time;
-    private Button addbutton;
+    public static EditText name_class;
+    public static EditText name_classroom;
+    public static EditText name_professor;
+
+    public static ArrayList<timechooseFragment> timechoosefragment_list = new ArrayList();
+
     public addTimeFragment() {
         // Required empty public constructor
     }
@@ -67,70 +66,56 @@ public class addTimeFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    @Override
-    public void onClick(View view)
-    {
-        switch (view.getId())
-        {
-            case R.id.addTime_Button:
-                onClick_add();
-                break;
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v=  inflater.inflate(R.layout.fragment_add_time, container, false);
-
+        timechoosefragment_list.clear();
 
         name_class = v.findViewById(R.id.AddTime_editText_Class);
         name_classroom = v.findViewById(R.id.AddTime_editText_Classroom);
         name_professor = v.findViewById(R.id.AddTime_editTexte_Professor);
-        name_time = v.findViewById(R.id.AddTime_editTexte_Time);
-        addbutton = v.findViewById(R.id.addTime_Button);
-        addbutton.setOnClickListener(this);
 
+
+        timechooseFragment fragment = new timechooseFragment();
+        FragmentTransaction mFragmentTransaction = getChildFragmentManager().beginTransaction();
+        mFragmentTransaction.add(R.id.addTimeFragment_Layout,fragment);
+        mFragmentTransaction.commit();
+        timechoosefragment_list.add(fragment);
         return v;
     }
-
-
-    public void onClick_add()
+    public void addTime()
     {
-        String tclass = name_class.getText().toString();
-        String tclassroom = name_classroom.getText().toString();
-        String tprofessor = name_professor.getText().toString();
-        String ttime = name_time.getText().toString();
-
-        //버튼 리스트 초기화,레이아웃에서 뷰 삭제
-        for(int i=0;i<LobbyActivity.LobbyButtonList.size();i++) {
-            LobbyActivity.layout.removeView(LobbyActivity.LobbyButtonList.get(i));
+        if(timechoosefragment_list.size() == 5)
+        {
+         Toast.makeText(this.getContext(), "더 이상 추가할 수 없습니다.", Toast.LENGTH_LONG).show();
         }
-        LobbyActivity.LobbyButtonList.clear();
+        else {
+            FragmentTransaction mFragmentTransaction = getChildFragmentManager().beginTransaction();
+            timechoosefragment_list.get(timechoosefragment_list.size() - 1).add_time.setVisibility(View.INVISIBLE);
+            timechoosefragment_list.get(timechoosefragment_list.size() - 1).remove_time.setVisibility(View.INVISIBLE);
 
-        LobbyDatabaseHelper LobbyDatabaseHelper = new LobbyDatabaseHelper(LobbyActivity.layout.getContext());
-        SQLiteDatabase db = LobbyDatabaseHelper.getWritableDatabase();
-
-        System.out.println("?");
-        String sql = "insert into "+LobbyActivity.MainTableName+" (Professor,Class,Classroom,Time) values (?,?,?,?)";
-        String[] args = {tprofessor,tclass,tclassroom,ttime};
-        db.execSQL(sql, args);
-
-        ((LobbyActivity) getActivity()).addTimeButton(LobbyActivity.MainTableName);
-        ((LobbyActivity)getActivity()).ShowTimeTable();
-
-
-        FragmentTransaction fragmentTransaction = ((LobbyActivity)getActivity()).fragmentManager.beginTransaction();
-        fragmentTransaction.remove( ((LobbyActivity)getActivity()).fragment);
-        fragmentTransaction.commit();
-        ((LobbyActivity)getActivity()).fragment = null;
-
-       MenuItem mi;
-        mi =((LobbyActivity)getActivity()).Mymenu.findItem(R.id.lobby_mitem_Test1);
-        mi.setVisible(true);
-        mi =((LobbyActivity)getActivity()). Mymenu.findItem(R.id.lobby_mitem_Test2);
-        mi.setVisible(true);
-
+            timechooseFragment fragment = new timechooseFragment();
+            mFragmentTransaction.add(R.id.addTimeFragment_Layout, fragment);
+            mFragmentTransaction.commit();
+            timechoosefragment_list.add(fragment);
+        }
     }
+    public void removeTime()
+    {
+        if(timechoosefragment_list.size() == 1)
+        {
+            Toast.makeText(this.getContext(), "시간이 한개밖에 존재하지 않습니다.", Toast.LENGTH_LONG).show();
+        }
+        else {
+            FragmentTransaction mFragmentTransaction = getChildFragmentManager().beginTransaction();
+            addTimeFragment.timechoosefragment_list.get(timechoosefragment_list.size() - 2).add_time.setVisibility(View.VISIBLE);
+            addTimeFragment.timechoosefragment_list.get(timechoosefragment_list.size() - 2).remove_time.setVisibility(View.VISIBLE);
+            mFragmentTransaction.remove(addTimeFragment.timechoosefragment_list.get(addTimeFragment.timechoosefragment_list.size()-1));
 
+            mFragmentTransaction.commit();
+            timechoosefragment_list.remove(addTimeFragment.timechoosefragment_list.size() - 1);
+        }
+    }
 }
