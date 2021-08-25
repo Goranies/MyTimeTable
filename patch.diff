@@ -1,0 +1,555 @@
+From 4ec77e547e5d970042f5fd89c26665adee32b018 Mon Sep 17 00:00:00 2001
+From: MadeByZiNo <38098073+MadeByZiNo@users.noreply.github.com>
+Date: Fri, 20 Aug 2021 13:32:45 +0900
+Subject: [PATCH] =?UTF-8?q?=EC=A0=80=EC=9E=A5=EC=9A=A9?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .idea/misc.xml                                |   5 +-
+ .../kbd/projectrepository/GroupAdapter.java   |  27 ++-
+ .../kbd/projectrepository/LobbyActivity.java  | 189 ++++++++++--------
+ .../LobbyDatabaseHelper.java                  |   9 +-
+ .../kbd/projectrepository/WizardActivity.java |  17 ++
+ .../WizardDatabaseHelper.java                 |  14 +-
+ .../res/drawable/ic_baseline_close_24.xml     |  10 +
+ app/src/main/res/layout/activity_wizard.xml   |   1 +
+ app/src/main/res/layout/group_layout.xml      |   8 +-
+ app/src/main/res/layout/group_time_layout.xml |  35 ++++
+ 10 files changed, 217 insertions(+), 98 deletions(-)
+ create mode 100644 app/src/main/res/drawable/ic_baseline_close_24.xml
+ create mode 100644 app/src/main/res/layout/group_time_layout.xml
+
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+index 49ac749..99378d1 100644
+--- a/.idea/misc.xml
++++ b/.idea/misc.xml
+@@ -3,9 +3,10 @@
+   <component name="DesignSurface">
+     <option name="filePathToZoomLevelMap">
+       <map>
+-        <entry key="..\:/Development/Projects/ProjectRepository/app/src/main/res/layout/activity_wizard.xml" value="0.1716485507246377" />
++        <entry key="..\:/Development/Projects/ProjectRepository/app/src/main/res/layout/activity_wizard.xml" value="0.33" />
+         <entry key="..\:/Development/Projects/ProjectRepository/app/src/main/res/layout/footer_layout.xml" value="0.27708333333333335" />
+-        <entry key="..\:/Development/Projects/ProjectRepository/app/src/main/res/layout/group_layout.xml" value="0.27708333333333335" />
++        <entry key="..\:/Development/Projects/ProjectRepository/app/src/main/res/layout/group_layout.xml" value="0.5" />
++        <entry key="..\:/Development/Projects/ProjectRepository/app/src/main/res/layout/group_time_layout.xml" value="0.5" />
+       </map>
+     </option>
+   </component>
+diff --git a/app/src/main/java/com/kbd/projectrepository/GroupAdapter.java b/app/src/main/java/com/kbd/projectrepository/GroupAdapter.java
+index 0cfc345..46cfd4b 100644
+--- a/app/src/main/java/com/kbd/projectrepository/GroupAdapter.java
++++ b/app/src/main/java/com/kbd/projectrepository/GroupAdapter.java
+@@ -2,17 +2,21 @@ package com.kbd.projectrepository;
+ 
+ import android.annotation.SuppressLint;
+ import android.content.Context;
++import android.text.PrecomputedText;
+ import android.util.Log;
+ import android.view.KeyEvent;
+ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.view.ViewGroup;
++import android.view.ViewTreeObserver;
+ import android.view.inputmethod.InputMethodManager;
+ import android.widget.Button;
+ import android.widget.ImageButton;
+ import android.widget.TextView;
+ 
+ import androidx.annotation.NonNull;
++import androidx.constraintlayout.widget.ConstraintLayout;
++import androidx.constraintlayout.widget.ConstraintSet;
+ import androidx.recyclerview.widget.RecyclerView;
+ 
+ import java.util.ArrayList;
+@@ -92,6 +96,7 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+     }
+ 
+     public class ItemViewHolder extends RecyclerView.ViewHolder {
++        private ConstraintLayout groupLayout;
+         private TextView groupName;
+         private ImageButton editName;
+         private ImageButton addTime;
+@@ -101,12 +106,32 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+ 
+         public ItemViewHolder(@NonNull View itemView) {
+             super(itemView);
++            groupLayout = itemView.findViewById(R.id.wizard_card_constraintLayout_group);
+             groupName = itemView.findViewById(R.id.wizard_card_editText_groupName);
+             editName = itemView.findViewById(R.id.wizard_card_button_editName);
+             addTime = itemView.findViewById(R.id.wizard_card_button_addTime);
+             deleteGroup = itemView.findViewById(R.id.wizard_card_button_deleteGroup);
+ 
+-            imm = (InputMethodManager) context.getSystemService(context.INPUT_METHOD_SERVICE);
++            imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
++
++            //groupLayout에 timeLayout 추가하기
++            LayoutInflater inflater = (LayoutInflater) itemView.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE); // 2. inflater 생성
++            View timeView = inflater.inflate(R.layout.group_time_layout,groupLayout,true); // 3. (넣을 xml 파일명, 기반 layout 객체, true)
++
++            timeView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
++                @Override
++                public void onGlobalLayout() {
++                    //timeLayout의 Constraint Widget 속성 변경하기
++                    ConstraintLayout timeLayout = timeView.findViewById(R.id.wizard_time_constraintLayout_time);
++                    ConstraintSet constraintSet = new ConstraintSet();
++                    constraintSet.clone(timeLayout);
++                    constraintSet.connect(R.id.wizard_time_constraintLayout_time, ConstraintSet.TOP, R.id.wizard_card_editText_groupName, ConstraintSet.BOTTOM, 10);
++                    constraintSet.applyTo(timeLayout);
++
++                    timeView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
++                }
++            });
++
+ 
+             groupName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                 @Override
+diff --git a/app/src/main/java/com/kbd/projectrepository/LobbyActivity.java b/app/src/main/java/com/kbd/projectrepository/LobbyActivity.java
+index 3748477..fd79820 100644
+--- a/app/src/main/java/com/kbd/projectrepository/LobbyActivity.java
++++ b/app/src/main/java/com/kbd/projectrepository/LobbyActivity.java
+@@ -9,6 +9,8 @@ import android.database.Cursor;
+ import android.database.DatabaseUtils;
+ import android.database.sqlite.SQLiteDatabase;
+ import android.graphics.Color;
++import android.graphics.drawable.ColorDrawable;
++import android.graphics.drawable.Drawable;
+ import android.os.Bundle;
+ import android.view.Menu;
+ import android.view.MenuItem;
+@@ -19,6 +21,7 @@ import android.widget.TableRow;
+ import android.widget.TextView;
+ 
+ import java.util.ArrayList;
++import java.util.Random;
+ 
+ public class LobbyActivity extends AppCompatActivity {
+ 
+@@ -134,87 +137,107 @@ public class LobbyActivity extends AppCompatActivity {
+         Cursor c = db.rawQuery(sql,null);
+ 
+         while(c.moveToNext()) {
+-            int StartTime_pos = c.getColumnIndex("StartTime");
+-            int EndTime_pos = c.getColumnIndex("EndTime");
++
+             int Professor_pos = c.getColumnIndex("Professor");
+             int Class_pos = c.getColumnIndex("Class");
+             int Classroom_pos = c.getColumnIndex("Classroom");
+-            int Week_pos = c.getColumnIndex("Week");
++            int Time_pos = c.getColumnIndex("Time");
+ 
+-            double TstartTime = c.getDouble(StartTime_pos);
+-            double TendTime = c.getDouble(EndTime_pos);
+             String Tprofessor = c.getString(Professor_pos);
+             String Tclass = c.getString(Class_pos);
+             String Tclassroom = c.getString(Classroom_pos);
+-            int Tweek = c.getInt(Week_pos);
+-
+-            Button b = new Button(this);
+-            int t_width, t_height;
+-
+-            if (Tweek == 1) {
+-                t_width = MonthTextView.getWidth();
+-                b.setX(MonthTextView.getX());
+-            }       //요일
+-            else if (Tweek == 2) {
+-                t_width = (TUESTextView.getWidth());
+-                b.setX(TUESTextView.getX());
+-            } else if (Tweek == 3) {
+-                t_width = WEDNESTextView.getWidth();
+-                b.setX(WEDNESTextView.getX());
+-            } else if (Tweek == 4) {
+-                t_width = (THURSTextView.getWidth());
+-                b.setX(THURSTextView.getX());
+-            } else {
+-                t_width = FRITextView.getWidth();
+-                b.setX(FRITextView.getX());
+-            }
+-
+-            if (TstartTime == 9) {
+-                t_height = (int) (TableRowS09.getHeight() * (TendTime - TstartTime));
+-                b.setY(TableRowS09.getY());
+-            }       //시간
+-            else if (TstartTime == 10) {
+-                t_height = (int) (TableRowS10.getHeight() * (TendTime - TstartTime));
+-                b.setY(TableRowS10.getY());
+-            } else if (TstartTime == 11) {
+-                t_height = (int) (TableRowS11.getHeight() * (TendTime - TstartTime));
+-                b.setY(TableRowS11.getY());
+-            } else if (TstartTime == 12) {
+-                t_height = (int) (TableRowS12.getHeight() * (TendTime - TstartTime));
+-                b.setY(TableRowS12.getY());
+-            } else if (TstartTime == 13) {
+-                t_height = (int) (TableRowS13.getHeight() * (TendTime - TstartTime));
+-                b.setY(TableRowS13.getY());
+-            } else if (TstartTime == 14) {
+-                t_height = (int) (TableRowS14.getHeight() * (TendTime - TstartTime));
+-                b.setY(TableRowS14.getY());
+-            } else if (TstartTime == 15) {
+-                t_height = (int) (TableRowS15.getHeight() * (TendTime - TstartTime));
+-                b.setY(TableRowS15.getY());
+-            } else {
+-                t_height = (int) (TableRowS16.getHeight() * (TendTime - TstartTime));
+-                b.setY(TableRowS16.getY());
+-            }
+-
+-            b.setLayoutParams(new ConstraintLayout.LayoutParams(t_width, t_height));
+-            b.setTextSize(11);
+-            b.setTextColor(Color.argb(255, 255, 255, 255));
+-            b.setText(Tclass + "\n" + Tprofessor + "\n" + Tclassroom);
+-            b.setBackgroundColor(Color.argb(255, 200, 200, 200));
+-
+-            LobbyButtonList.add(b);
+-
+-            LobbyButtonDatabaseHelper = new LobbyButtonDatabaseHelper(this);
+-            db = LobbyButtonDatabaseHelper.getWritableDatabase();
+-
+-            sql = "insert into BTable (Width,Height,Rcolor,Gcolor,Bcolor,X,Y,Text) values (?,?,?,?,?,?,?,?)";
+-
+-                String[] args = {Integer.toString(t_width),Integer.toString(t_height),Integer.toString(200)
+-                        ,Integer.toString(200),Integer.toString(200),Float.toString(b.getX())
+-                        ,Float.toString(b.getY()),b.getText().toString()};
+-                        db.execSQL(sql, args);
+-
++            String TTime = c.getString(Time_pos);
++
++            String TimeList[] = TTime.split("/");
++
++            for(int i=0;i<TimeList.length;i++) {
++                Button b = new Button(this);
++                int t_width, t_height;
++
++                String tempTime[] = TimeList[i].split("_");
++
++                for(int j=0;j<tempTime.length;j++) {
++                    if (tempTime[0].equals("월")) {
++                        t_width = MonthTextView.getWidth();
++                        b.setX(MonthTextView.getX());
++                    }       //요일
++                    else if (tempTime[0].equals("화")) {
++                        t_width = (TUESTextView.getWidth());
++                        b.setX(TUESTextView.getX());
++                    } else if (tempTime[0].equals("수")) {
++                        t_width = WEDNESTextView.getWidth();
++                        b.setX(WEDNESTextView.getX());
++                    } else if (tempTime[0].equals("목")) {
++                        t_width = (THURSTextView.getWidth());
++                        b.setX(THURSTextView.getX());
++                    } else {
++                        t_width = FRITextView.getWidth();
++                        b.setX(FRITextView.getX());
++                    }
++
++
++
++                    float StartHour = Float.parseFloat(tempTime[1].substring(0,2));
++                    float StartMinute = Float.parseFloat(tempTime[1].substring(2,4));
++                    float EndHour = Float.parseFloat(tempTime[2].substring(0,2));
++                    float EndMinute = Float.parseFloat(tempTime[2].substring(2,4));
++
++
++                    if (StartHour == 9) {
++                        t_height = (int) (TableRowS09.getHeight() * ((EndHour-StartHour)+(EndMinute-StartMinute)/60));
++                        b.setY(TableRowS09.getY()+TableRowS09.getHeight()*(StartMinute/60));
++                    }       //시간
++                    else if (StartHour == 10) {
++                        t_height = (int) (TableRowS10.getHeight() * ((EndHour-StartHour)+(EndMinute-StartMinute)/60));
++                        b.setY(TableRowS10.getY()+TableRowS10.getHeight()*(StartMinute/60));
++                    } else if (StartHour == 11) {
++                        t_height = (int) (TableRowS11.getHeight() * ((EndHour-StartHour)+(EndMinute-StartMinute)/60));
++                        b.setY(TableRowS11.getY()+TableRowS11.getHeight()*(StartMinute/60));
++                    } else if (StartHour == 12) {
++                        t_height = (int) (TableRowS12.getHeight() * ((EndHour-StartHour)+(EndMinute-StartMinute)/60));
++                        b.setY(TableRowS12.getY()+TableRowS12.getHeight()*(StartMinute/60));
++                    } else if (StartHour == 13) {
++                        t_height = (int) (TableRowS13.getHeight() * ((EndHour-StartHour)+(EndMinute-StartMinute)/60));
++                        b.setY(TableRowS13.getY()+TableRowS13.getHeight()*(StartMinute/60));
++                    } else if (StartHour == 14) {
++                        t_height = (int) (TableRowS14.getHeight() * ((EndHour-StartHour)+(EndMinute-StartMinute)/60));
++                        b.setY(TableRowS14.getY()+TableRowS14.getHeight()*(StartMinute/60));
++                    } else if (StartHour == 15) {
++                        t_height = (int) (TableRowS15.getHeight() * ((EndHour-StartHour)+(EndMinute-StartMinute)/60));
++                        b.setY(TableRowS15.getY()+TableRowS15.getHeight()*(StartMinute/60));
++                    } else {
++                        t_height = (int) (TableRowS16.getHeight() * ((EndHour-StartHour)+(EndMinute-StartMinute)/60));
++                        b.setY(TableRowS16.getY()+TableRowS16.getHeight()*(StartMinute/60));
++                    }
++                    b.setLayoutParams(new ConstraintLayout.LayoutParams(t_width, t_height));
++                    b.setTextSize(11);
++                    b.setTextColor(Color.argb(255, 255, 255, 255));
++                    b.setText(Tclass + "\n" + Tprofessor + "\n" + Tclassroom);
++                    int bgcolor;
++                    if(i>0)
++                    {
++                        ColorDrawable draw = (ColorDrawable) LobbyButtonList.get(LobbyButtonList.size()-1).getBackground();
++                        bgcolor = draw.getColor();
++                    }
++                    else {
++                        Random random = new Random();
++                        bgcolor = Color.argb(255,random.nextInt(75)+125,random.nextInt(75)+125,random.nextInt(75)+125);
++                    }
++                    b.setBackgroundColor(bgcolor);
++                    LobbyButtonList.add(b);
++
++                    LobbyButtonDatabaseHelper = new LobbyButtonDatabaseHelper(this);
++                    db = LobbyButtonDatabaseHelper.getWritableDatabase();
++
++                    sql = "insert into BTable (Width,Height,Rcolor,Gcolor,Bcolor,X,Y,Text) values (?,?,?,?,?,?,?,?)";
++
++                    String[] args = {Integer.toString(t_width), Integer.toString(t_height), Integer.toString(Color.red(bgcolor))
++                            , Integer.toString(Color.green(bgcolor)), Integer.toString(Color.blue(bgcolor)), Float.toString(b.getX())
++                            , Float.toString(b.getY()), b.getText().toString()};
++                    db.execSQL(sql, args);
++                }
+             }
++        }
+ 
+     }
+ 
+@@ -279,11 +302,10 @@ public class LobbyActivity extends AppCompatActivity {
+         if(count ==0)   //아예 비워있을때만 데이터 추가
+         {
+ 
+-            String sql = "insert into Table1 (StartTime,EndTime,Professor,Class,Classroom,Week) values (?,?,?,?,?,?)";
+-            String[] args1 = {"10", "14", "조세형", "C언어", "Y9350", "1"};
+-            String[] args2 = {"12", "14", "조세형", "C언어", "Y9350", "3"};
++            String sql = "insert into Table1 (Professor,Class,Classroom,Time) values (?,?,?,?)";
++            String[] args1 = {"조세형", "C언어", "Y9350","월_1200_1300/수_1200_1400"};
+             db.execSQL(sql, args1);
+-            db.execSQL(sql, args2);
++
+         }
+             addTimeButton("Table1");
+             ShowTimeTable();
+@@ -307,18 +329,17 @@ public class LobbyActivity extends AppCompatActivity {
+         long count = DatabaseUtils.queryNumEntries(db,"Table2");
+         if(count ==0)   //아예 비워있을때만 데이터 추가
+         {
+-            String sql = "insert into Table2 (StartTime,EndTime,Professor,Class,Classroom,Week) values (?,?,?,?,?,?)";
+-            String[] args1 = {"11", "13", "이충기", "C언어", "Y9150", "2"};
+-            String[] args2 = {"11", "13.5", "이충기", "C언어", "Y9150", "4"};
+ 
++            String sql = "insert into Table2 (Professor,Class,Classroom,Time) values (?,?,?,?)";
++            String[] args1 = {"이충기", "자바", "Y9150","화_1230_1330/목_1230_1500"};
++            String[] args2 = {"심호진", "공학수학", "Y5230","수_1400_1600"};
+             db.execSQL(sql, args1);
+             db.execSQL(sql, args2);
+ 
+         }
+-            addTimeButton("Table2");
+-            ShowTimeTable();
+-            System.out.println(LobbyButtonList.size());
+-
++        addTimeButton("Table2");
++        ShowTimeTable();
++        System.out.println(LobbyButtonList.size());
+     }
+ 
+     public void ShowTimeTable() //시간표 모양 보이게 하는 매소드
+diff --git a/app/src/main/java/com/kbd/projectrepository/LobbyDatabaseHelper.java b/app/src/main/java/com/kbd/projectrepository/LobbyDatabaseHelper.java
+index c00b43e..3c5894a 100644
+--- a/app/src/main/java/com/kbd/projectrepository/LobbyDatabaseHelper.java
++++ b/app/src/main/java/com/kbd/projectrepository/LobbyDatabaseHelper.java
+@@ -20,22 +20,17 @@ public class LobbyDatabaseHelper extends SQLiteOpenHelper {
+ 
+         String sql1 = "create table Table1("
+                 + "ID integer primary key autoincrement, "
+-                + "StartTime real not null,"
+-                + "EndTime real not null,"
+                 + "Professor text not null,"
+                 + "Class text not null,"
+                 + "Classroom text not null,"
+-                + "Week integer not null"
++                + "Time text not null"
+                 +")";
+-
+         String sql2 = "create table Table2("
+                 + "ID integer primary key autoincrement, "
+-                + "StartTime real not null,"
+-                + "EndTime real not null,"
+                 + "Professor text not null,"
+                 + "Class text not null,"
+                 + "Classroom text not null,"
+-                + "Week integer not null"
++                + "Time text not null"
+                 +")";
+         db.execSQL(sql1);
+         db.execSQL(sql2);
+diff --git a/app/src/main/java/com/kbd/projectrepository/WizardActivity.java b/app/src/main/java/com/kbd/projectrepository/WizardActivity.java
+index 23497b0..8bdb738 100644
+--- a/app/src/main/java/com/kbd/projectrepository/WizardActivity.java
++++ b/app/src/main/java/com/kbd/projectrepository/WizardActivity.java
+@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
+ import android.os.Bundle;
+ import android.telephony.mbms.GroupCall;
+ import android.util.Log;
++import android.view.View;
+ 
+ import androidx.appcompat.app.AppCompatActivity;
+ import androidx.recyclerview.widget.LinearLayoutManager;
+@@ -29,6 +30,18 @@ public class WizardActivity extends AppCompatActivity {
+         wizardDatabaseHelper = new WizardDatabaseHelper(this);
+         db = wizardDatabaseHelper.getWritableDatabase();
+ 
++        String testSql = "insert into TimeTable (Professor, Class, Classroom, Time, LinkGroup) values (?, ?, ?, ?, ?)";
++        String[] professorList = {"김진호", "김병대", "신중섭"};
++        String[] classList = {"인천학개론1", "경남학개론", "인천학개론2"};
++        String[] classRoomList = {"부평지하상가", "경상남도청", "인천앞바다"};
++        String[] timeList = {"월_1230_1330", "화_0800_0900", "수_0930_1130/목_1030_1130"};
++        String[] linkList = {"Group 1", "Group 2", "Group 1"};
++
++        for(int i = 0; i < 3; i++) {
++            String[] arg = {professorList[i], classList[i], classRoomList[i], timeList[i], linkList[i]};
++            db.execSQL(testSql, arg);
++        }
++
+         initGroupRecycler();
+     }
+ 
+@@ -106,4 +119,8 @@ public class WizardActivity extends AppCompatActivity {
+         Log.d("SQL_NEW", newName);
+         db.execSQL(sql, args);
+     }
++
++    public void clickButton(View view) {
++
++    }
+ }
+\ No newline at end of file
+diff --git a/app/src/main/java/com/kbd/projectrepository/WizardDatabaseHelper.java b/app/src/main/java/com/kbd/projectrepository/WizardDatabaseHelper.java
+index 7d36cd4..9583843 100644
+--- a/app/src/main/java/com/kbd/projectrepository/WizardDatabaseHelper.java
++++ b/app/src/main/java/com/kbd/projectrepository/WizardDatabaseHelper.java
+@@ -20,12 +20,22 @@ public class WizardDatabaseHelper extends SQLiteOpenHelper {
+     public void onCreate(SQLiteDatabase db) {
+         Log.d("DB", "데이터베이스가 생성되었습니다");
+ 
+-        String sql = "create table GroupTable("
++        String sql1 = "create table GroupTable("
+                 + "ID integer primary key autoincrement, "
+                 + "Name text not null"
+                 +")";
+ 
+-        db.execSQL(sql);
++        String sql2 = "create table TimeTable("
++                + "ID integer primary key autoincrement, "
++                + "Professor text not null,"
++                + "Class text not null,"
++                + "Classroom text not null,"
++                + "Time text not null,"
++                + "LinkGroup text not null"
++                +")";
++
++        db.execSQL(sql1);
++        db.execSQL(sql2);
+     }
+ 
+     //DB버전이 구식이라면, 업데이트 한다
+diff --git a/app/src/main/res/drawable/ic_baseline_close_24.xml b/app/src/main/res/drawable/ic_baseline_close_24.xml
+new file mode 100644
+index 0000000..16d6d37
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_baseline_close_24.xml
+@@ -0,0 +1,10 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24"
++    android:tint="?attr/colorControlNormal">
++  <path
++      android:fillColor="@android:color/white"
++      android:pathData="M19,6.41L17.59,5 12,10.59 6.41,5 5,6.41 10.59,12 5,17.59 6.41,19 12,13.41 17.59,19 19,17.59 13.41,12z"/>
++</vector>
+diff --git a/app/src/main/res/layout/activity_wizard.xml b/app/src/main/res/layout/activity_wizard.xml
+index 172d6dc..9f8c863 100644
+--- a/app/src/main/res/layout/activity_wizard.xml
++++ b/app/src/main/res/layout/activity_wizard.xml
+@@ -21,6 +21,7 @@
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginBottom="24dp"
++        android:onClick="clickButton"
+         android:text="실행"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintEnd_toEndOf="parent"
+diff --git a/app/src/main/res/layout/group_layout.xml b/app/src/main/res/layout/group_layout.xml
+index de6d028..192595f 100644
+--- a/app/src/main/res/layout/group_layout.xml
++++ b/app/src/main/res/layout/group_layout.xml
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<androidx.cardview.widget.CardView
+-    xmlns:android="http://schemas.android.com/apk/res/android"
++<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_margin="5dp"
+@@ -11,7 +11,9 @@
+     app:cardMaxElevation="10dp"
+     app:cardPreventCornerOverlap="true"
+     app:cardUseCompatPadding="true">
++
+     <androidx.constraintlayout.widget.ConstraintLayout
++        android:id="@+id/wizard_card_constraintLayout_group"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_marginHorizontal="10dp"
+@@ -59,5 +61,7 @@
+             app:layout_constraintEnd_toEndOf="parent"
+             app:layout_constraintTop_toTopOf="parent"
+             app:srcCompat="@drawable/ic_delete_group_button" />
++
+     </androidx.constraintlayout.widget.ConstraintLayout>
++
+ </androidx.cardview.widget.CardView>
+\ No newline at end of file
+diff --git a/app/src/main/res/layout/group_time_layout.xml b/app/src/main/res/layout/group_time_layout.xml
+new file mode 100644
+index 0000000..bf95fab
+--- /dev/null
++++ b/app/src/main/res/layout/group_time_layout.xml
+@@ -0,0 +1,35 @@
++<?xml version="1.0" encoding="utf-8"?>
++<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:id="@+id/wizard_time_constraintLayout_time"
++    android:layout_width="match_parent"
++    android:layout_height="wrap_content">
++
++    <TextView
++        android:id="@+id/wizard_time_textView_className"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="강의명"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintTop_toTopOf="parent" />
++
++    <TextView
++        android:id="@+id/wizard_time_textView_classNumber"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="강좌번호 교수명"
++        android:textSize="12sp"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintTop_toBottomOf="@+id/wizard_time_textView_className" />
++
++    <TextView
++        android:id="@+id/wizard_time_textView_classTime"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="강의일강의시간(강의실)"
++        android:textSize="12sp"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintTop_toBottomOf="@+id/wizard_time_textView_classNumber" />
++
++</androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
+-- 
+2.24.1.windows.2
+

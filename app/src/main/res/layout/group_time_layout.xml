@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/wizard_time_constraintLayout_time"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/wizard_time_textView_className"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="강의명"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/wizard_time_textView_classNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="강좌번호 교수명"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wizard_time_textView_className" />
+
+    <TextView
+        android:id="@+id/wizard_time_textView_classTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="강의일강의시간(강의실)"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wizard_time_textView_classNumber" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
