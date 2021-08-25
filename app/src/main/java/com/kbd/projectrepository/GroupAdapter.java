@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -18,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -114,24 +117,7 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-            //groupLayout에 timeLayout 추가하기
-            LayoutInflater inflater = (LayoutInflater) itemView.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE); // 2. inflater 생성
-            View timeView = inflater.inflate(R.layout.group_time_layout,groupLayout,true); // 3. (넣을 xml 파일명, 기반 layout 객체, true)
-
-            timeView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    //timeLayout의 Constraint Widget 속성 변경하기
-                    ConstraintLayout timeLayout = timeView.findViewById(R.id.wizard_time_constraintLayout_time);
-                    ConstraintSet constraintSet = new ConstraintSet();
-                    constraintSet.clone(timeLayout);
-                    constraintSet.connect(R.id.wizard_time_constraintLayout_time, ConstraintSet.TOP, R.id.wizard_card_editText_groupName, ConstraintSet.BOTTOM, 10);
-                    constraintSet.applyTo(timeLayout);
-
-                    timeView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-            });
-
+            showTimeInformation(new GroupTime("김병대","개꿀학개론","1234", "Y2145", "화15:00-17:50", "Group 1"));
 
             groupName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
@@ -174,6 +160,30 @@ public class GroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     //강의 시간 추가 버튼을 누르면 할 일
                 }
             });
+        }
+
+        public void showTimeInformation(GroupTime time) {
+            //그룹안에 시간 띄우기
+            LayoutInflater inflater = (LayoutInflater) itemView.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ViewGroup parentView = groupLayout;
+            ConstraintLayout innerArea = (ConstraintLayout) inflater.inflate(R.layout.group_time_layout, parentView, false);
+            parentView.addView(innerArea);
+
+            //setText
+            TextView className = innerArea.findViewById(R.id.wizard_time_textView_className);
+            TextView classNumber = innerArea.findViewById(R.id.wizard_time_textView_classNumber);
+            TextView classTime = innerArea.findViewById(R.id.wizard_time_textView_classTime);
+
+            className.setText(time.getClassName());
+            classNumber.setText(time.getClassNumber() + " " + time.getProfessor());
+            classTime.setText(time.getTime() + "(" + time.getClassRoom() + ")");
+
+            //Constranit Widget 속성 조정하기
+            ConstraintSet set = new ConstraintSet();
+            set.clone(groupLayout);
+            set.connect(innerArea.getId(), ConstraintSet.TOP, editName.getId(), ConstraintSet.BOTTOM, 10);
+            set.connect(innerArea.getId(), ConstraintSet.LEFT, groupLayout.getId(), ConstraintSet.LEFT, 10);
+            set.applyTo(groupLayout);
         }
     }
 
